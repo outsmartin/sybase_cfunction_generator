@@ -10,7 +10,11 @@ class Generator
     "}\n"
   end
   def dbcmd
-    "dbcmd(dbproc,\"#{sql}\");\n  "
+    selectors = self.sql.match(/select (.+) FROM/i)[1]
+    selectors = selectors.split(",") rescue selectors
+    selectors.map!{|s| s.split(":")[0] rescue s}
+    sql_stripped = self.sql.gsub(/select (.+) FROM/i,"SELECT #{selectors.join","} FROM")
+    "dbcmd(dbproc,\"#{sql_stripped}\");\n  "
   end
   def dbsqlexec
     "dbsqlexec(dbproc);
@@ -25,8 +29,7 @@ class Generator
   end
   def no_more_rows
     ["while (dbnextrow(dbproc)!=NO_MORE_ROWS)
-      {
-        ","}"]
+      {","\n      }"]
   end
   def dbbind
     selectors = self.sql.match(/select (.+) FROM/i)[1]
@@ -62,8 +65,7 @@ class Generator
 
     printfs = selectors.collect do |s|
       selector = selector_to_sybase s
-      "printf(\"#{selector[2]}: %#{selector[3][0] rescue "s"}"+ ' \n"'+",#{selector[2]});
-      "
+      "\n        printf(\"#{selector[2]}: %#{selector[3][0] rescue "s"}"+ ' \n"'+",#{selector[2]});"
     end
 
     printfs
@@ -75,9 +77,9 @@ class Generator
       output << dbcmd
       output << dbsqlexec
       output << no_more_results[0]
-        output << dbbind.join("\n")
+        output << dbbind.join("")
         output << no_more_rows[0]
-          output << get_printfs.join("\n")
+          output << get_printfs.join("")
         output << no_more_rows[1]
       output << no_more_results[1]
     output << function_end

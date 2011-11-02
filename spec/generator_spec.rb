@@ -52,9 +52,32 @@ describe Generator do
     }
 }
 '
-
-
   end
+  it "should generate complex select from" do
+    @generator.sql = 'SELECT Name:string,Moneten:float,Name2,Schlumpf:float FROM Mitarbeiter'
+    @generator.to_function.should ==
+'void function(void){
+  dbcmd(dbproc,"SELECT Name,Moneten,Name2,Schlumpf FROM Mitarbeiter");
+  dbsqlexec(dbproc);
+
+  while (dbresults(dbproc)!=NO_MORE_RESULTS)
+    {
+      dbbind(dbproc,1,NTBSTRINGBIND,0,Name);
+      dbbind(dbproc,2,FLT8BIND,0,(BYTE*)&Moneten);
+      dbbind(dbproc,3,NTBSTRINGBIND,0,Name2);
+      dbbind(dbproc,4,FLT8BIND,0,(BYTE*)&Schlumpf);
+      while (dbnextrow(dbproc)!=NO_MORE_ROWS)
+      {
+        printf("Name: %s \n",Name);
+        printf("Moneten: %f \n",Moneten);
+        printf("Name2: %s \n",Name2);
+        printf("Schlumpf: %f \n",Schlumpf);
+      }
+    }
+}
+'
+  end
+
 
 end
 
