@@ -9,16 +9,12 @@ describe Generator do
   end
   it "should have function stuff with name" do
     name = @generator.function_name
-    @generator.function_start.should == "void #{name}(void){
-  "
+    @generator.function_start.should == "void #{name}(void){\n  "
     @generator.function_end.should == "}\n"
   end
   it "should generate dbcmd and dbsqlexec" do
-    @generator.dbcmd.should == "dbcmd(dbproc,\"#{@generator.sql}\");
-  "
-    @generator.dbsqlexec.should == "dbsqlexec(dbproc);
-
-  "
+    @generator.dbcmd.should == "dbcmd(dbproc,\"#{@generator.sql}\");\n  "
+    @generator.dbsqlexec.should == "dbsqlexec(dbproc);\n\n  "
   end
   it "should generate dbbind" do
     bind = @generator.dbbind

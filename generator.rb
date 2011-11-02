@@ -4,16 +4,13 @@ class Generator
     @printfs = []
   end
   def function_start
-    "void #{self.function_name}(void){
-  "
+    "void #{self.function_name}(void){\n  "
   end
   def function_end
-    "}
-"
+    "}\n"
   end
   def dbcmd
-    "dbcmd(dbproc,\"#{sql}\");
-  "
+    "dbcmd(dbproc,\"#{sql}\");\n  "
   end
   def dbsqlexec
     "dbsqlexec(dbproc);
@@ -24,8 +21,7 @@ class Generator
     ["while (dbresults(dbproc)!=NO_MORE_RESULTS)
     {
       ","
-    }
-"]
+    }\n"]
   end
   def no_more_rows
     ["while (dbnextrow(dbproc)!=NO_MORE_ROWS)
