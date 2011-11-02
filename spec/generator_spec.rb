@@ -11,7 +11,7 @@ describe Generator do
     name = @generator.function_name
     @generator.function_start.should == "void #{name}(void){
   "
-    @generator.function_end.should == "}"
+    @generator.function_end.should == "}\n"
   end
   it "should generate dbcmd and dbsqlexec" do
     @generator.dbcmd.should == "dbcmd(dbproc,\"#{@generator.sql}\");
@@ -38,12 +38,11 @@ describe Generator do
   it "should generate printfs according to select" do
     @generator.sql = 'SELECT Name:string,Moneten:float FROM Mitarbeiter'
     @generator.dbbind
-    @generator.get_printfs.should == ['printf("Name: %s \n",Name);','printf("Moneten: %f \n",Moneten);']
+    @generator.get_printfs.map{|i| i.gsub(/\s/,'')}.should == ['printf("Name:%s\n",Name);','printf("Moneten:%f\n",Moneten);']
   end
   it "should generate complete function for select" do
     @generator.to_function.should ==
-<<-comp
-void function(void){
+'void function(void){
   dbcmd(dbproc,"SELECT Beruf FROM Mitarbeiter");
   dbsqlexec(dbproc);
 
@@ -56,7 +55,7 @@ void function(void){
       }
     }
 }
-comp
+'
 
 
   end

@@ -8,7 +8,8 @@ class Generator
   "
   end
   def function_end
-    "}"
+    "}
+"
   end
   def dbcmd
     "dbcmd(dbproc,\"#{sql}\");
@@ -22,7 +23,9 @@ class Generator
   def no_more_results
     ["while (dbresults(dbproc)!=NO_MORE_RESULTS)
     {
-      ","}"]
+      ","
+    }
+"]
   end
   def no_more_rows
     ["while (dbnextrow(dbproc)!=NO_MORE_ROWS)
@@ -63,7 +66,8 @@ class Generator
 
     printfs = selectors.collect do |s|
       selector = selector_to_sybase s
-      "printf(\"#{selector[2]}: %#{selector[3][0] rescue "s"} \\n\",#{selector[2]});"
+      "printf(\"#{selector[2]}: %#{selector[3][0] rescue "s"}"+ ' \n"'+",#{selector[2]});
+      "
     end
 
     printfs
