@@ -86,7 +86,4 @@ class Generator
   end
 
 
-def strip_whitespace(array)
-    array.map{|i| i.gsub(/\s/,'')}
-  end
 end

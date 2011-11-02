@@ -1,4 +1,19 @@
 require("../generator")
+RSpec::Matchers.define :be_the_same_content do |expected|
+  match do |actual|
+    strip_whitespace(actual) == strip_whitespace(expected)
+  end
+  def strip_whitespace(input)
+    if input.is_a? Array
+      input.map!{|i| i.gsub(/\s/,'')}
+    end
+    if input.is_a? String
+       input.gsub!(/\s/,'')
+    end
+    input
+  end
+end
+
 describe Generator do
   before(:each) do
     @generator = Generator.new
@@ -22,23 +37,22 @@ describe Generator do
   end
   it "should generate dbbind for all selectors" do
     @generator.sql = 'SELECT Name,Beruf FROM Mitarbeiter'
-    @generator.dbbind.map{|i| i.gsub(/\s/,'')}.should == ["dbbind(dbproc,1,NTBSTRINGBIND,0,Name);","dbbind(dbproc,2,NTBSTRINGBIND,0,Beruf);"]
+    @generator.dbbind.should be_the_same_content ["dbbind(dbproc,1,NTBSTRINGBIND,0,Name);","dbbind(dbproc,2,NTBSTRINGBIND,0,Beruf);"]
   end
   it "should generate correctly typed dbbind for all selectors" do
     @generator.sql = 'SELECT Name:string,Moneten:float FROM Mitarbeiter'
-    @generator.dbbind.map{|i| i.gsub(/\s/,'')}.should == ["dbbind(dbproc,1,NTBSTRINGBIND,0,Name);","dbbind(dbproc,2,FLT8BIND,0,(BYTE*)&Moneten);"]
+    @generator.dbbind.should be_the_same_content ["dbbind(dbproc,1,NTBSTRINGBIND,0,Name);","dbbind(dbproc,2,FLT8BIND,0,(BYTE*)&Moneten);"]
   end
   it "should generate printf statements" do
-    @generator.get_printfs.map{|i| i.gsub(/\s/,'')}.should == ['printf("Beruf:%s\n",Beruf);']
+    @generator.get_printfs.should be_the_same_content ['printf("Beruf:%s\n",Beruf);']
   end
   it "should generate printfs according to select" do
     @generator.sql = 'SELECT Name:string,Moneten:float FROM Mitarbeiter'
     @generator.dbbind
-    @generator.get_printfs.map{|i| i.gsub(/\s/,'')}.should == ['printf("Name:%s\n",Name);','printf("Moneten:%f\n",Moneten);']
+    @generator.get_printfs.should be_the_same_content ['printf("Name:%s\n",Name);','printf("Moneten:%f\n",Moneten);']
   end
   it "should generate complete function for select" do
-    @generator.to_function.should ==
-'void function(void){
+    @generator.to_function.should be_the_same_content 'void function(void){
   dbcmd(dbproc,"SELECT Beruf FROM Mitarbeiter");
   dbsqlexec(dbproc);
 
@@ -55,8 +69,7 @@ describe Generator do
   end
   it "should generate complex select from" do
     @generator.sql = 'SELECT Name:string,Moneten:float,Name2,Schlumpf:float FROM Mitarbeiter'
-    @generator.to_function.should ==
-'void function(void){
+    @generator.to_function.should be_the_same_content 'void function(void){
   dbcmd(dbproc,"SELECT Name,Moneten,Name2,Schlumpf FROM Mitarbeiter");
   dbsqlexec(dbproc);
 
