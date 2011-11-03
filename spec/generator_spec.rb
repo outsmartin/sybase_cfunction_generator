@@ -1,19 +1,6 @@
-require("../generator")
-RSpec::Matchers.define :be_the_same_content do |expected|
-  match do |actual|
-    strip_whitespace(actual) == strip_whitespace(expected)
-  end
-  def strip_whitespace(input)
-    if input.is_a? Array
-      input.map!{|i| i.gsub(/\s/,'')}
-    end
-    if input.is_a? String
-       input.gsub!(/\s/,'')
-    end
-    input
-  end
-end
-
+require("~/sybase_cfunction_generator/lib/generator.rb")
+require_relative("./helpers.rb")
+include GeneratorHelperMethods
 describe Generator do
   before(:each) do
     @generator = Generator.new
