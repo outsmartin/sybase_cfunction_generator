@@ -1,4 +1,4 @@
-require("~/sybase_cfunction_generator/lib/generator.rb")
+require_relative("../lib/generator.rb")
 require_relative("./helpers.rb")
 include GeneratorHelperMethods
 describe Generator do

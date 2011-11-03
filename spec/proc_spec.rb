@@ -1,9 +1,9 @@
-require("~/sybase_cfunction_generator/lib/generator.rb")
-require("helpers.rb")
+require_relative("../lib/generator.rb")
+require_relative("./helpers.rb")
 include GeneratorHelperMethods
 describe Generator do
   it "should process complete call procedure" do
-    pending  
+    pending
     @generator.sql= "CREATE PROCEDURE avg_old_per_ort (@ort CHAR(20), @result INT output) AS SELECT @result = (SELECT AVG(datediff(yy, Gebdat, getdate())) FROM Mitarbeiter WHERE Ort = @ort)"
     @generator.to_function.should 'void avgOldPerOrt()
 {
